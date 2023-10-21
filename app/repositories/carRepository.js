@@ -48,10 +48,24 @@ const findAll = async (queryOptions) => {
   }
 };
 
+const showToMember = async () => {
+  try {
+    return await Car.findAll({
+      where: {
+        isAvailable: true,
+      },
+      attributes: ["name", "brand", "year", "price"],
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   create,
   update,
   deleteData,
   findById,
   findAll,
+  showToMember,
 };

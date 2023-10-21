@@ -160,9 +160,26 @@ const findAllCars = async (req, res, next) => {
       queryOptions.isAvailable = false;
     }
 
-    console.log(queryOptions);
-
     const cars = await carService.findAllCars(queryOptions);
+
+    if (cars.length === 0) {
+      return next(new ApiError("You don't have any data", 400));
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        cars,
+      },
+    });
+  } catch (error) {
+    return next(new ApiError(error.message, 400));
+  }
+};
+
+const showCarsForMember = async (req, res, next) => {
+  try {
+    const cars = await carService.showCarsToMember();
 
     if (cars.length === 0) {
       return next(new ApiError("You don't have any data", 400));
@@ -185,4 +202,5 @@ module.exports = {
   deleteCar,
   findCarById,
   findAllCars,
+  showCarsForMember,
 };

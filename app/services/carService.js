@@ -40,10 +40,24 @@ const findAllCars = async (queryOptions) => {
   }
 };
 
+const showCarsToMember = async () => {
+  try {
+    return await carRepository.showToMember({
+      where: {
+        isAvailable: true,
+      },
+      attributes: ["name", "brand", "year", "price"],
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   createCar,
   updateCar,
   deleteCar,
   findCarById,
   findAllCars,
+  showCarsToMember,
 };
