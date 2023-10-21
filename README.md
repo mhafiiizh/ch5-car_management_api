@@ -1,4 +1,4 @@
-# CHallenge 5
+# Challenge 5
 
 ## Car Management API and OpenAPI
 
