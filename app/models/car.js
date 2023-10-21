@@ -40,9 +40,11 @@ module.exports = (sequelize, DataTypes) => {
       createdBy: DataTypes.INTEGER,
       deletedBy: DataTypes.INTEGER,
       updatedBy: DataTypes.INTEGER,
+      deletedAt: DataTypes.DATE,
     },
     {
       sequelize,
+      paranoid: true,
       modelName: "Car",
     }
   );

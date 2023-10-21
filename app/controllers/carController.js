@@ -112,6 +112,10 @@ const deleteCar = async (req, res, next) => {
 
     await carService.deleteCar(carId);
 
+    await carService.updateCar(carId, {
+      deletedBy: req.user.id,
+    });
+
     res.status(200).json({
       status: "success",
       message: "Car deleted",
