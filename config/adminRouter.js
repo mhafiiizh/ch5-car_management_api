@@ -1,15 +1,10 @@
 const router = require("express").Router();
 const Admin = require("../app/controllers/adminController");
-const checkSuperadmin = require("../app/middlewares/checkSuperadmin");
 const authenticate = require("../app/middlewares/authenticate");
+const checkRole = require("../app/middlewares/checkRole");
 
 router.get("/", Admin.findAllAdmins);
-router.post(
-  "/",
-  authenticate,
-  checkSuperadmin("Superadmin"),
-  Admin.createAdmin
-);
+router.post("/", authenticate, checkRole("Superadmin"), Admin.createAdmin);
 
 router.get("/:id", Admin.findAdminById);
 router.put("/:id", Admin.updateAdmin);

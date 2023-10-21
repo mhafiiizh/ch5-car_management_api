@@ -142,7 +142,7 @@ const login = async (req, res, next) => {
 
       res.status(200).json({
         status: "Success",
-        message: "Berhasil login",
+        message: "Login successfully",
         data: token,
       });
     } else {
@@ -168,12 +168,12 @@ const login = async (req, res, next) => {
 
         res.status(200).json({
           status: "Success",
-          message: "Berhasil login",
+          message: "Login successfully",
           data: token,
         });
       } else {
         // Jika pengguna tidak ditemukan atau kata sandi tidak cocok
-        return next(new ApiError("Email atau kata sandi salah", 400));
+        return next(new ApiError("Email or password is wrong", 400));
       }
     }
   } catch (err) {

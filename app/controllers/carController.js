@@ -1,14 +1,35 @@
-const { where } = require("sequelize");
+const { Op } = require("sequelize");
+const { Car } = require("../models");
+
 const carService = require("../services/carService");
+const imagekit = require("../lib/imagekit");
 const ApiError = require("../utils/apiError");
 
 const createCar = async (req, res, next) => {
   const { name, brand, year, price, isAvailable } = req.body;
+  const file = req.file;
+  let img;
   try {
-    if (!name && !brand && !year && !price && !isAvailable) {
+    if (!name && !brand && !year && !price && !file && !isAvailable) {
       return next(
-        new ApiError("Name, Brand, Year, Price, isAvailable are required!", 400)
+        new ApiError(
+          "Name, Brand, Year, Price, Image, isAvailable are required!",
+          400
+        )
       );
+    }
+
+    if (file) {
+      // dapatkan extension file nya
+      const split = file.originalname.split(".");
+      const extension = split[split.length - 1];
+
+      // upload file ke imagekit
+      const uploadedImage = await imagekit.upload({
+        file: file.buffer,
+        fileName: `IMG-${Date.now()}.${extension}`,
+      });
+      img = uploadedImage.url;
     }
 
     const newCar = await carService.createCar({
@@ -16,6 +37,7 @@ const createCar = async (req, res, next) => {
       brand,
       year,
       price,
+      image: img,
       isAvailable,
       createdBy: req.user.id,
     });
@@ -33,76 +55,80 @@ const createCar = async (req, res, next) => {
 
 const updateCar = async (req, res, next) => {
   const { name, brand, year, price, isAvailable } = req.body;
+  const file = req.file;
+  let img;
   try {
-    const adminId = req.params.id;
-    if (!adminId) {
-      next(new ApiError("ID not found!", 404));
+    const carId = req.params.id;
+    if (!carId) {
+      return next(new ApiError("ID not found!", 404));
     }
-    if (!name && !brand && !year && !price && !isAvailable) {
-      next(
-        new ApiError("Name, Brand, Year, Price, isAvailable are required!", 400)
+    if (!name && !brand && !year && !price && !file && !isAvailable) {
+      return next(
+        new ApiError(
+          "Name, Brand, Year, Price, Image, isAvailable are required!",
+          400
+        )
       );
     }
 
-    await carService.updateCar(
-      {
-        name,
-        brand,
-        year,
-        price,
-        isAvailable,
-        updatedBy: adminId,
-      },
-      {
-        where: {
-          id: adminId,
-        },
-      }
-    );
+    if (file) {
+      // dapatkan extension file nya
+      const split = file.originalname.split(".");
+      const extension = split[split.length - 1];
+
+      // upload file ke imagekit
+      const uploadedImage = await imagekit.upload({
+        file: file.buffer,
+        fileName: `IMG-${Date.now()}.${extension}`,
+      });
+      img = uploadedImage.url;
+    }
+
+    await carService.updateCar(carId, {
+      name,
+      brand,
+      year,
+      price,
+      imageUrl: img,
+      isAvailable,
+      updatedBy: req.user.id,
+    });
 
     res.status(200).json({
       status: "success",
       message: "Car updated",
     });
   } catch (error) {
-    next(new ApiError(error.message, 400));
+    return next(new ApiError(error.message, 400));
   }
 };
 
 const deleteCar = async (req, res, next) => {
   try {
-    const adminId = req.params.id;
-    if (!adminId) {
-      next(new ApiError("ID not found!", 404));
+    const carId = req.params.id;
+    if (!carId) {
+      return next(new ApiError("ID not found!", 404));
     }
 
-    await carService.deleteCar({
-      where: {
-        id: req.params.id,
-      },
-    });
+    await carService.deleteCar(carId);
 
     res.status(200).json({
       status: "success",
       message: "Car deleted",
     });
   } catch (error) {
-    next(new ApiError(error.message, 400));
+    return next(new ApiError(error.message, 400));
   }
 };
 
 const findCarById = async (req, res, next) => {
   try {
-    const adminId = req.params.id;
-    if (!adminId) {
-      next(new ApiError("ID not found!", 404));
+    const carId = req.params.id;
+    if (!carId) {
+      return next(new ApiError("ID not found!", 404));
     }
 
-    const car = await carService.findCarById({
-      where: {
-        id: req.params.id,
-      },
-    });
+    const car = await carService.findCarById(carId);
 
     res.status(200).json({
       status: "success",
@@ -111,13 +137,33 @@ const findCarById = async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(new ApiError(error.message, 400));
+    return next(new ApiError(error.message, 400));
   }
 };
 
 const findAllCars = async (req, res, next) => {
   try {
-    const cars = await carService.findAllCars();
+    const { name, brand, year, price, isAvailable } = req.query;
+    const queryOptions = {};
+
+    if (name) queryOptions.name = { [Op.iLike]: `%${name}%` };
+    if (brand) queryOptions.brand = { [Op.iLike]: `%${brand}%` };
+    if (year) queryOptions.year = year;
+    if (price) queryOptions.price = price;
+    if (isAvailable === "true") {
+      queryOptions.isAvailable = true;
+    } else if (isAvailable === "false") {
+      queryOptions.isAvailable = false;
+    }
+
+    console.log(queryOptions);
+
+    const cars = await carService.findAllCars(queryOptions);
+
+    if (cars.length === 0) {
+      return next(new ApiError("You don't have any data", 400));
+    }
+
     res.status(200).json({
       status: "success",
       data: {
@@ -125,7 +171,7 @@ const findAllCars = async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(new ApiError(error.message, 400));
+    return next(new ApiError(error.message, 400));
   }
 };
 

@@ -1,19 +1,20 @@
 const bcrypt = require("bcrypt");
 const adminService = require("../services/adminService");
+const { Admin } = require("../models");
 const ApiError = require("../utils/apiError");
 
 const createAdmin = async (req, res, next) => {
   const { name, age, address, role, email, password, confirmPassword } =
     req.body;
   try {
-    const admin = adminService.findOne({
+    const admin = await Admin.findOne({
       where: {
         email,
       },
     });
 
     if (!name && !age && !address && !role && !email && !password) {
-      next(
+      return next(
         new ApiError(
           "Name, Age, Address, Role, Email, Password are required!",
           400
@@ -22,16 +23,16 @@ const createAdmin = async (req, res, next) => {
     }
 
     if (admin) {
-      next(new ApiError("Email has already taken", 400));
+      return next(new ApiError("Email has already taken", 400));
     }
 
-    const passwordLength = password.length <= 8;
+    const passwordLength = password.length < 8;
     if (passwordLength) {
-      next(new ApiError("Minimum password must be 8 characters", 400));
+      return next(new ApiError("Minimum password must be 8 characters", 400));
     }
 
     if (password !== confirmPassword) {
-      next(new ApiError("Password does not match", 400));
+      return next(new ApiError("Password does not match", 400));
     }
 
     const saltRounds = 10;
@@ -52,13 +53,18 @@ const createAdmin = async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(new ApiError(error.message, 400));
+    return next(new ApiError(error.message, 400));
   }
 };
 
 const findAllAdmins = async (req, res, next) => {
   try {
     const admins = await adminService.findAllAdmins();
+
+    if (admins.length === 0) {
+      return next(new ApiError("You don't have any data", 400));
+    }
+
     res.status(200).json({
       status: "success",
       data: {
@@ -76,11 +82,7 @@ const findAdminById = async (req, res, next) => {
     if (!adminId) {
       next(new ApiError("ID Not Found", 400));
     }
-    const admin = await adminService.findAdminById({
-      where: {
-        id: adminId,
-      },
-    });
+    const admin = await adminService.findAdminById(adminId);
 
     res.status(200).json({
       status: "success",
@@ -99,16 +101,11 @@ const deleteAdmin = async (req, res, next) => {
     if (!adminId) {
       next(new ApiError("ID Not Found", 400));
     }
-    const admin = await adminService.deleteAdmin({
-      where: {
-        id: adminId,
-      },
-    });
+    const admin = await adminService.deleteAdmin(adminId);
 
     res.status(200).json({
       status: "success",
       message: "Data has already deleted",
-      data: null,
     });
   } catch (error) {
     next(new ApiError(error.message, 400));
@@ -122,26 +119,16 @@ const updateAdmin = async (req, res, next) => {
     if (!adminId) {
       next(new ApiError("ID Not Found", 400));
     }
-    const admin = await adminService.updateAdmin(
-      {
-        name,
-        age,
-        address,
-        role,
-      },
-      {
-        where: {
-          id: adminId,
-        },
-      }
-    );
+    const admin = await adminService.updateAdmin(adminId, {
+      name,
+      age,
+      address,
+      role,
+    });
 
     res.status(200).json({
       status: "success",
       message: "Data Updated",
-      data: {
-        admin,
-      },
     });
   } catch (error) {
     next(new ApiError(error.message, 400));

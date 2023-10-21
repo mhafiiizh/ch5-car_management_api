@@ -1,17 +1,18 @@
 const ApiError = require("../utils/apiError");
+const Admin = require("../models"); // Gantilah dengan model Anda
 
-const checkRole = () => {
+const checkRole = (role, role2) => {
   return async (req, res, next) => {
     try {
-      if (req.admin.role == "Superadmin" || req.admin.role == "Admin") {
+      if (req.user.role == role || req.user.role == role2) {
         next();
       } else {
-        next(
-          new ApiError(`You are not Superadmin or Admin can't access it`, 401)
+        return next(
+          new ApiError(`Cannot access because you are not admin part`, 401)
         );
       }
     } catch (err) {
-      next(new ApiError(err.message, 500));
+      return next(new ApiError(err.message, 500));
     }
   };
 };

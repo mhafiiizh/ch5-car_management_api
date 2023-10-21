@@ -21,6 +21,9 @@ module.exports = {
       price: {
         type: Sequelize.FLOAT,
       },
+      image: {
+        type: Sequelize.TEXT,
+      },
       isAvailable: {
         type: Sequelize.BOOLEAN,
         defaultValue: true,

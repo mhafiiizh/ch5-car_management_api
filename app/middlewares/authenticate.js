@@ -7,7 +7,7 @@ module.exports = async (req, res, next) => {
     const bearerToken = req.headers.authorization;
 
     if (!bearerToken) {
-      next(new ApiError("Token tidak ditemukan", 401));
+      return next(new ApiError("Token not found", 401));
     }
 
     const token = bearerToken.split("Bearer ")[1];
@@ -23,7 +23,7 @@ module.exports = async (req, res, next) => {
         req.user = admin;
         next();
       } else {
-        next(new ApiError("Data admin tidak ditemukan", 404));
+        return next(new ApiError("Admin data not found", 404));
       }
     } else {
       const member = await Member.findByPk(payload.id);
@@ -31,7 +31,7 @@ module.exports = async (req, res, next) => {
         req.user = member;
         next();
       } else {
-        next(new ApiError("Data member tidak ditemukan", 404));
+        return next(new ApiError("Nenber data not found", 404));
       }
     }
   } catch (err) {

@@ -1,0 +1,1369 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Car Management API",
+    "version": "1.0.0",
+    "description": "This is a simple API for car management system. This API include Superadmin, Admin, Member, and Cars."
+  },
+  "tags": [
+    {
+      "name": "Admin",
+      "description": "API for superadmin and admin."
+    },
+    {
+      "name": "Member",
+      "description": "API for register as a Member"
+    },
+    {
+      "name": "Auth",
+      "description": "API for login and find the current user"
+    },
+    {
+      "name": "Cars",
+      "description": "API CRUD for management cars"
+    }
+  ],
+  "servers": [
+    {
+      "url": "http://localhost:8000/"
+    }
+  ],
+  "paths": {
+    "/api/v1/admins/": {
+      "get": {
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "summary": "Find all Admin data",
+        "description": "This API give all admin data as a response",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "admins": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Admins"
+                          },
+                          "maxItems": 100
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Failed to get all data admins",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Failed"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "You don't have any data"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Failed"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "summary": "Create Admin",
+        "description": "This API for create an admin that can only be executed by superadmin",
+        "requestBody": {
+          "description": "Request body for create an admin",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Alecks"
+                  },
+                  "age": {
+                    "type": "integer",
+                    "example": "30"
+                  },
+                  "address": {
+                    "type": "string",
+                    "example": "Singapore"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": ["Superadmin", "Admin"],
+                    "example": "Admin"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "alecks@gmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "alecks1234"
+                  },
+                  "confirmPassword": {
+                    "type": "string",
+                    "example": "alecks1234"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success create an admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "newAdmin": {
+                          "$ref": "#/components/schemas/Admins"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+
+          "400": {
+            "description": "Failed when email has already taken",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Failed"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Email has already taken"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Failed"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admins/{id}": {
+      "get": {
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "summary": "Find Admin data by ID",
+        "description": "This API give admin data by ID as a response",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 2
+            },
+            "description": "ID of the admin to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "newAdmin": {
+                          "$ref": "#/components/schemas/Admins"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Failed"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "ID not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Failed"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "ID not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "summary": "Update Admin data by ID",
+        "description": "This API for update admin data by ID as a response",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 2
+            },
+            "description": "ID of the admin to update"
+          }
+        ],
+        "requestBody": {
+          "description": "Request body for updating an admin",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Alecks"
+                  },
+                  "age": {
+                    "type": "integer",
+                    "example": 30
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Data updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data updated"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Failed"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Admin not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Failed"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Admin not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "summary": "Find Admin data by ID",
+        "description": "This API give admin data by ID as a response",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 2
+            },
+            "description": "ID of the admin to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data has already deleted"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Failed"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Admin not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Failed"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Admin not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/register": {
+      "post": {
+        "tags": ["Member"],
+        "summary": "Create Member",
+        "description": "This API for create an member",
+        "requestBody": {
+          "description": "Request body for create an member",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Davai"
+                  },
+                  "age": {
+                    "type": "integer",
+                    "example": "23"
+                  },
+                  "address": {
+                    "type": "string",
+                    "example": "Malaysia"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "davai@gmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "davai1234"
+                  },
+                  "confirmPassword": {
+                    "type": "string",
+                    "example": "davai1234"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success create an member",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "newAdmin": {
+                          "$ref": "#/components/schemas/Member"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Failed when email has already taken",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Failed"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Email has already taken"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login for Superadmin, Admin, and Member",
+        "description": "This API for login",
+        "requestBody": {
+          "description": "Request body for login",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "alecks@gmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "alecks1234"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Login successfully"
+                    },
+                    "data": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwibmFtZSI6IkFsZWNrcyIsImVtYWlsIjoiYWxlY2tzQGdtYWlsLmNvbSIsInJvbGUiOiJBZG1pbiIsImlhdCI6MTY5Nzg4OTU0MH0.OJr1MMRbOkGFKVBENeCjaDr8dKmrHng499wPMcRYflk"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Failed login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Failed"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Email or password is wrong"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/me": {
+      "get": {
+        "tags": ["Auth"],
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "summary": "Check current user",
+        "description": "This API for check the current user",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/Admins"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Failed"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/v1/cars": {
+      "get": {
+        "tags": ["Cars"],
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "Avanza"
+            },
+            "description": "Query name"
+          },
+          {
+            "name": "brand",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Query brand"
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Query year"
+          },
+          {
+            "name": "price",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Query price"
+          },
+          {
+            "name": "isAvailable",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Query isAvailable"
+          }
+        ],
+        "summary": "Find all Cars data",
+        "description": "This API give all cars data as a response",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "cars": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Cars"
+                          },
+                          "maxItems": 100
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Cars"],
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "summary": "Create Car",
+        "description": "This API for create a car that can only be executed by superadmin or admin",
+        "requestBody": {
+          "description": "Request body for create a car",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Supra MK4"
+                  },
+                  "brand": {
+                    "type": "string",
+                    "example": "Toyota"
+                  },
+                  "year": {
+                    "type": "integer",
+                    "example": 2004
+                  },
+                  "price": {
+                    "type": "integer",
+                    "example": 250000000
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "isAvailable": {
+                    "type": "boolean",
+                    "example": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success create a car",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "newCar": {
+                          "$ref": "#/components/schemas/Cars"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "All fields are required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Failed"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Name, Brand, Year, Price, Image, isAvailable are required!"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Failed"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cars/{id}": {
+      "get": {
+        "tags": ["Cars"],
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "summary": "Find car by ID",
+        "description": "This API give car data by ID as a response",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 2
+            },
+            "description": "ID of the car to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "car": {
+                          "$ref": "#/components/schemas/Cars"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Failed"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "ID not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Failed"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "ID not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Cars"],
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "summary": "Update car by ID",
+        "description": "This API will update car data by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 2
+            },
+            "description": "ID car for update"
+          }
+        ],
+        "requestBody": {
+          "description": "Request body for create a car",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Supra MK4"
+                  },
+                  "brand": {
+                    "type": "string",
+                    "example": "Toyota"
+                  },
+                  "year": {
+                    "type": "integer",
+                    "example": 2004
+                  },
+                  "price": {
+                    "type": "integer",
+                    "example": 250000000
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "isAvailable": {
+                    "type": "boolean",
+                    "example": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Data updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Car updated"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Failed"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "ID not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Failed"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "ID not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Cars"],
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ],
+        "summary": "Delete car by ID",
+        "description": "This API delete car data by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 3
+            },
+            "description": "ID car for delete"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Car deleted"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Failed"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Admin not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Failed"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "ID not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Admins": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Zan"
+          },
+          "age": {
+            "type": "integer",
+            "example": "20"
+          },
+          "address": {
+            "type": "string",
+            "example": "Bekasi"
+          },
+          "role": {
+            "type": "string",
+            "example": "Superadmin"
+          },
+          "email": {
+            "type": "string",
+            "example": "zan@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "$2b$10$RdGFC4NXoVzT4wbI3sl/aOxtai0ASSQmiOHhuYUekTUSBqM8AoEOC"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date",
+            "example": "2023-10-20T16:34:23.814Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date",
+            "example": "2023-10-20T16:34:23.814Z"
+          }
+        }
+      },
+      "Member": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Davai"
+          },
+          "age": {
+            "type": "integer",
+            "example": "23"
+          },
+          "address": {
+            "type": "string",
+            "example": "Malysia"
+          },
+          "email": {
+            "type": "string",
+            "example": "davai@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "$2b$10$/.3BxNS7GU0nddyJDj4xm.Xszhgj906acN/nT.x0lMA7rWOhtyF4."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date",
+            "example": "2023-10-20T16:34:23.814Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date",
+            "example": "2023-10-20T16:34:23.814Z"
+          }
+        }
+      },
+      "Cars": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Supra MK4"
+          },
+          "brand": {
+            "type": "string",
+            "example": "Toyota"
+          },
+          "year": {
+            "type": "integer",
+            "example": 2004
+          },
+          "price": {
+            "type": "integer",
+            "example": 250000000
+          },
+          "image": {
+            "type": "string",
+            "format": "text",
+            "example": "https://ik.imagekit.io/cbtfkvupm4/IMG-1697849885183_DnsjYLKNb.png"
+          },
+          "isAvailable": {
+            "type": "boolean",
+            "example": true
+          },
+          "createdBy": {
+            "type": "integer",
+            "example": 1
+          },
+          "deletedBy": {
+            "type": "integer",
+            "example": null
+          },
+          "updatedBy": {
+            "type": "integer",
+            "example": null
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date",
+            "example": "2023-10-20T16:34:23.814Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date",
+            "example": "2023-10-20T16:34:23.814Z"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerToken": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

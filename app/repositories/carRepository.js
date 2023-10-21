@@ -40,23 +40,9 @@ const findById = async (id) => {
   }
 };
 
-const findAll = async () => {
+const findAll = async (queryOptions) => {
   try {
-    return await Car.findAll({
-      attributes: [
-        "id",
-        "name",
-        "brand",
-        "year",
-        "price",
-        "isAvailable",
-        "createdBy",
-        "deletedBy",
-        "updatedBy",
-        "createdAt",
-        "updatedAt",
-      ],
-    });
+    return await Car.findAll({ where: queryOptions });
   } catch (error) {
     throw error;
   }

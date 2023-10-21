@@ -32,9 +32,9 @@ const findCarById = async (id) => {
   }
 };
 
-const findAllCars = async () => {
+const findAllCars = async (queryOptions) => {
   try {
-    return await carRepository.findAll();
+    return await carRepository.findAll(queryOptions);
   } catch (error) {
     throw error;
   }

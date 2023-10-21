@@ -32,6 +32,7 @@ module.exports = (sequelize, DataTypes) => {
       brand: DataTypes.STRING,
       year: DataTypes.INTEGER,
       price: DataTypes.FLOAT,
+      image: DataTypes.TEXT,
       isAvailable: {
         type: DataTypes.BOOLEAN,
         defaultValue: true,
